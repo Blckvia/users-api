@@ -7,10 +7,13 @@ const usersController = require('../controllers/users');
 
 const router = express.Router();
 
-// GET all users
+// GET All Users
 router.get('/profiles', usersController.getUsers);
 
-// POST register user
+// GET One User
+router.get('/profile/:userId', usersController.getUser);
+
+// POST User Registration
 router.post(
   '/user/register',
   [
@@ -34,5 +37,8 @@ router.post(
   ],
   usersController.register
 );
+
+// POST User Authorization
+router.post('/user/login', usersController.login);
 
 module.exports = router;
