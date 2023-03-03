@@ -1,5 +1,5 @@
 const express = require('express');
-const { body } = require('express-validator');
+const { check, body } = require('express-validator');
 
 const User = require('../models/user');
 
@@ -20,17 +20,6 @@ router.post(
     body('email')
       .isEmail()
       .withMessage('Please enter a valid email.')
-      .custom((userEmail) => {
-        return new Promise((resolve, reject) => {
-          User.findOne({ where: { email: userEmail } }).then((emailExist) => {
-            if (emailExist !== null) {
-              reject(new Error('Email already exists.'));
-            } else {
-              resolve(true);
-            }
-          });
-        });
-      })
       .normalizeEmail(),
     body('password').trim().not().isEmpty(),
     body('first_name').trim().not().isEmpty(),
@@ -40,5 +29,27 @@ router.post(
 
 // POST User Authorization
 router.post('/user/login', usersController.login);
+
+// PUT User Editing
+router.put(
+  '/profile/:userId',
+  [
+    body('email')
+      .isEmail()
+      .withMessage('Please enter a valid email.')
+      .custom((value, { req }) => {
+        return User.findOne({ where: { email: value } }).then((userDoc) => {
+          if (userDoc) {
+            return Promise.reject('E-Mail adress already exists.');
+          }
+        });
+      })
+      .normalizeEmail(),
+    body('first_name').trim().not().isEmpty(),
+    body('last_name').trim().isLength({ min: 3 }),
+    body('sex').isIn(['M', 'F']).withMessage('Sex has to be "M" or "F"!'),
+  ],
+  usersController.updateUser
+);
 
 module.exports = router;

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const clearImage = require('../helpers/deleteImageHelper');
 
 exports.getUsers = (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -41,7 +42,7 @@ exports.getUser = (req, res, next) => {
     .then((user) => {
       if (!user) {
         const error = new Error('Could not find user.');
-        const statusCode = 404;
+        error.statusCode = 404;
         throw error;
       }
       res.status(200).json({ message: 'User fetched', user: user });
@@ -116,6 +117,57 @@ exports.login = (req, res, next) => {
         { expiresIn: '1h' }
       );
       res.status(200).json({ token: token, userId: loadedUser.id.toString() });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+// I wanted to use sendGrid for changing "email" by token which will sent via email.
+// But the storage of the token must be in the database, and this contradicts the conditions of the test task
+// that's why it will change without token verification via email.
+exports.updateUser = (req, res, next) => {
+  const userId = req.params.userId;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    error.data = errors.array();
+    throw error;
+  }
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
+  const email = req.body.email;
+  const sex = req.body.sex;
+  let imageUrl = req.body.imageUrl;
+  if (req.file) {
+    imageUrl = req.file.path.replace('\\', '/');
+  }
+  User.findByPk(userId)
+    .then((user) => {
+      if (!user) {
+        const error = new Error('Could not find user.');
+        error.statusCode = 404;
+        throw error;
+      }
+      if (imageUrl === undefined) {
+        imageUrl = user.imageUrl;
+      }
+      if (imageUrl !== user.imageUrl) {
+        clearImage(user.imageUrl);
+      }
+      user.first_name = first_name;
+      user.last_name = last_name;
+      user.imageUrl = imageUrl;
+      user.email = email;
+      user.sex = sex;
+      return user.save();
+    })
+    .then((result) => {
+      res.status(200).json({ message: 'User updated!', user: result });
     })
     .catch((err) => {
       if (!err.statusCode) {
