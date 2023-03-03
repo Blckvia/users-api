@@ -12,7 +12,7 @@
 
 ### How to run project:
 
-1. In the project directory, you need to go to:<br> `server/util/database.js` <br>and fill your database settings to connect. <br>2. After that you can run the server:
+1. In the project directory, you need to go to:<br> `server/util/database.js`  and fill your database settings to connect. <br>2. After that you can run the server:
 
 ### `npm start`
 
