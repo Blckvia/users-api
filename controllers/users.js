@@ -142,7 +142,7 @@ exports.updateUser = (req, res, next) => {
   const last_name = req.body.last_name;
   const email = req.body.email;
   const sex = req.body.sex;
-  let imageUrl = req.body.imageUrl;
+  let imageUrl = req.body.image;
   if (req.file) {
     imageUrl = req.file.path.replace('\\', '/');
   }

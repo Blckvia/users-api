@@ -17,13 +17,17 @@ const User = sequelize.define('user', {
   email: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
   password: {
     type: Sequelize.STRING,
     allowNull: false,
   },
   sex: Sequelize.STRING,
-  imageUrl: Sequelize.STRING,
+  imageUrl: {
+    type: Sequelize.STRING,
+    defaultValue: 'not set',
+  },
 });
 
 module.exports = User;

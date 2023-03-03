@@ -4,6 +4,7 @@ const { check, body } = require('express-validator');
 const User = require('../models/user');
 
 const usersController = require('../controllers/users');
+const isAuth = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -33,17 +34,11 @@ router.post('/user/login', usersController.login);
 // PUT User Editing
 router.put(
   '/profile/:userId',
+  isAuth,
   [
     body('email')
       .isEmail()
       .withMessage('Please enter a valid email.')
-      .custom((value, { req }) => {
-        return User.findOne({ where: { email: value } }).then((userDoc) => {
-          if (userDoc) {
-            return Promise.reject('E-Mail adress already exists.');
-          }
-        });
-      })
       .normalizeEmail(),
     body('first_name').trim().not().isEmpty(),
     body('last_name').trim().isLength({ min: 3 }),

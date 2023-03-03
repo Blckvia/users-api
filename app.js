@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 
 const sequelize = require('./util/database');
@@ -13,19 +14,18 @@ const app = express();
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'images');
+    cb(null, 'images/');
   },
   filename: (req, file, cb) => {
-    cb(null, uuidv4());
+    const date = moment().format('DDMMYYYY-HHmmss_SSS');
+    cb(null, `${date}-${file.originalname}`);
+    // cb(null, uuidv4());
+    // cb(null, new Date().toISOString() + '-' + file.originalname);
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  const fileSize = parseInt(req.headers['content-length']);
-  if (
-    file.mimetype === 'image/png' ||
-    (file.mimetype === 'image/jpg' && fileSize <= 1048576)
-  ) {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
     cb(null, true);
   } else {
     cb(null, false);
@@ -34,7 +34,11 @@ const fileFilter = (req, file, cb) => {
 
 app.use(bodyParser.json());
 app.use(
-  multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
+  multer({
+    storage: fileStorage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 1024 * 1024 * 10 },
+  }).single('image')
 );
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
@@ -65,7 +69,6 @@ app.use((error, req, res, next) => {
 sequelize
   .sync()
   .then((result) => {
-    // console.log(result);
     app.listen(8080);
   })
   .catch((err) => {
