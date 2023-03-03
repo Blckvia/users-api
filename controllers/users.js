@@ -126,9 +126,6 @@ exports.login = (req, res, next) => {
     });
 };
 
-// I wanted to use sendGrid for changing "email" by token which will sent via email.
-// But the storage of the token must be in the database, and this contradicts the conditions of the test task
-// that's why it will change without token verification via email.
 exports.updateUser = (req, res, next) => {
   const userId = req.params.userId;
   const errors = validationResult(req);
