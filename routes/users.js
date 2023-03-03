@@ -40,9 +40,18 @@ router.put(
       .isEmail()
       .withMessage('Please enter a valid email.')
       .normalizeEmail(),
-    body('first_name').trim().not().isEmpty(),
-    body('last_name').trim(),
-    body('sex').isIn(['M', 'F']).withMessage('Sex has to be "M" or "F"!'),
+    body('first_name')
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage('Please enter first name'),
+    body('last_name')
+      .trim()
+      .isLength({ min: 3 })
+      .withMessage('Please enter last name'),
+    body('sex')
+      .isIn(['M', 'F', undefined])
+      .withMessage('Sex has to be "M" or "F"!'),
   ],
   usersController.updateUser
 );
