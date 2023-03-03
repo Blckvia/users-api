@@ -37,7 +37,6 @@ exports.getUsers = (req, res, next) => {
 
 exports.getUser = (req, res, next) => {
   const userId = req.params.userId;
-  console.log(userId);
   User.findByPk(userId)
     .then((user) => {
       if (!user) {
