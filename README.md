@@ -2,7 +2,7 @@
 
 # Steps to run app:
 
-## - First of all initialize CSV file to create local DB or just register users via API:
+## - First of all initialize DB with sequlize model in the project after that you can import data from csv file or register new users via API:
 
 [CSV TABLE](sql-db.csv)
 
