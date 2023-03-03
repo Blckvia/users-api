@@ -2,15 +2,15 @@
 
 # Steps to run app:
 
-## - First of all initialize DB with sequlize model in the project after that you can import data from csv file or register new users via API:
+### - First of all initialize DB with sequlize model in the project after that you can import data from csv file or register new users via API:
 
 [CSV TABLE](sql-db.csv)
 
-## Clone the repository:
+### Clone the repository:
 
-### `git clone https://github.com/Blckvia/users-api`
+#### `git clone https://github.com/Blckvia/users-api`
 
-## How to run project:
+### How to run project:
 
 ### 1. In the project directory, you need to go to:<br> `server/util/database.js` <br>and fill your database settings to connect. <br>2. After that you can run the server:
 
